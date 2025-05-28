@@ -19,13 +19,6 @@ class FilaPrioridade:
         _, ocorrencia = heapq.heappop(self._fila)
         return ocorrencia
         
-    def ver_proxima(self) -> Ocorrencia:
-        """Retorna a próxima ocorrência sem removê-la da fila"""
-        if not self._fila:
-            return None
-        _, ocorrencia = self._fila[0]
-        return ocorrencia
-        
     def esta_vazia(self) -> bool:
         """Verifica se a fila está vazia"""
         return len(self._fila) == 0

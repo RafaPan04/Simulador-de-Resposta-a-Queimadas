@@ -8,7 +8,7 @@ from fila_prioridade import FilaPrioridade
 
 class CentralAtendimento:
     def __init__(self):
-        self.ocorrencias = {}  # Dicionário para busca rápida por ID
+        self.ocorrencias: dict[int, Ocorrencia] = {}  # Dicionário para busca rápida por ID
         self.fila_prioridade = FilaPrioridade()  # Fila de prioridade para ocorrências
         self.equipes: list[Equipe] = []  # Lista de equipes disponíveis
         self.regioes = set()  # Conjunto de regiões atendidas
@@ -65,44 +65,44 @@ class CentralAtendimento:
     def listar_ocorrencias_por_severidade(self, severidade):
         """Lista todas as ocorrências de uma determinada severidade"""
         ocorrencias = self.buscar_por_severidade(severidade)
+        if not ocorrencias:
+            print(f"Nenhuma ocorrência com severidade {severidade} encontrada")
+            return
         print(f"\nOcorrências com severidade {severidade}:")
         for ocorrencia in ocorrencias:
-            print(f"ID: {ocorrencia.id} - Região: {ocorrencia.regiao} - Status: {ocorrencia.status}")
+            ocorrencia.exibir_resumo()
 
-    def atender_proxima_ocorrencia(self):
+    def atender_proxima_ocorrencia(self) -> Ocorrencia | None:
         """Atende a próxima ocorrência com maior prioridade"""
         if self.fila_prioridade.esta_vazia():
             return None
 
-        ocorrencia = self.fila_prioridade.remover_proxima
+        ocorrencia = self.fila_prioridade.remover_proxima()
         return ocorrencia   
-        
-    def registrar_acao(self, id_ocorrencia, acao):
-        """Registra uma ação em uma ocorrência específica"""
-        if id_ocorrencia in self.ocorrencias:
-            self.ocorrencias[id_ocorrencia].registrar_acao(acao)
-            return True
-        return False
-        
-    def listar_historico_equipe(self):
-        """Lista o histórico de todas as equipes"""
-        for equipe in self.equipes:
-            equipe.listar_historico()
+    
             
-    def atualizar_status(self, id_ocorrencia, novo_status):
+    # def registrar_acao(self, id_ocorrencia, acao):
+    #     """Registra uma ação em uma ocorrência específica"""
+    #     if id_ocorrencia in self.ocorrencias:
+    #         self.ocorrencias[id_ocorrencia].registrar_acao(acao)
+    #         return True
+    #     return False
+        
+    def listar_completamente_ocorrencias_registradas(self):
+        """Lista o histórico de todas as ocorrências registradas"""
+        for ocorrencia in self.ocorrencias.values():
+            print(ocorrencia.__str__())
+            
+    def atualizar_status_ocorrencia(self, id_ocorrencia, novo_status):
         """Atualiza o status de uma ocorrência"""
         if id_ocorrencia in self.ocorrencias:
             ocorrencia = self.ocorrencias[id_ocorrencia]
             ocorrencia.atualizar_status(novo_status)
-            
-            # Se resolvida, remove das equipes
-            if novo_status == "resolvida":
-                for equipe in self.equipes:
-                    equipe.remover_ocorrencia(ocorrencia)
-            return True
-        return False
-        
-    def gerar_relatorio_regiao(self, regiao):
+
+            # Se resolvida, remove a equipe
+           
+
+    # def gerar_relatorio_regiao(self, regiao):
         """Gera relatório de atendimentos por região"""
         ocorrencias_regiao = [o for o in self.ocorrencias.values() if o.regiao == regiao]
         
@@ -115,22 +115,6 @@ class CentralAtendimento:
             
             severidades = [o.severidade for o in ocorrencias_regiao]
             print(f"Severidade média: {sum(severidades)/len(severidades):.1f}")
-            
-    # def simular_chamadas(self, num_simulacoes):
-    #     """Simula chamadas aleatórias com severidade crescente"""
-    #     regioes = list(self.regioes) if self.regioes else ["Norte", "Sul", "Leste", "Oeste", "Centro"]
-    #     severidades = [1, 2, 3, 4, 5]
-        
-    #     for i in range(num_simulacoes):
-    #         regiao = random.choice(regioes)
-    #         severidade = random.choice(severidades)
-    #         descricao = f"Simulação de incêndio na região {regiao}"
-            
-    #         ocorrencia = Ocorrencia(regiao, severidade, descricao)
-    #         self.registrar_ocorrencia(ocorrencia)
-            
-    #         print(f"Simulação {i+1}: Ocorrência registrada em {regiao} com severidade {severidade}")
-    #         time.sleep(1)  # Pequena pausa para simular tempo real
             
     def buscar_ocorrencia(self, id_ocorrencia):
         """Busca uma ocorrência pelo ID usando busca em dicionário O(1)"""

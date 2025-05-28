@@ -7,83 +7,72 @@ from datetime import datetime
 
 def exibir_menu():
     print("\n=== SIMULADOR DE RESPOSTA A QUEIMADAS ===")
-    print("1. Gerenciar Equipes")
     print("2. Adicionar uma nova ocorrência")
-    print("3. Atender ocorrência (atenderá a ocorrência com maior prioridade)")
+    print("3. Atender ocorrência (atenderá a ocorrência com maior prioridade na fila)")
     print("4. Atualizar status de ocorrência")
-    print("5. Gerar relatório por região")
     # print("6. Simular chamadas aleatórias")
     print("7. Buscar detalhes de ocorrência")
-    print("8. Buscar ocorrências por grau de severidade")
+    print("8. Buscar lista de ocorrências por grau de severidade")
+    print("9. Listar todas as ocorrências registradas")
+    print("10. Listar histórico de atendimentos de todas as equipes")
     print("0. Sair")
     return input("Escolha uma opção: ")
 
-def exibir_menu_equipes():
-    print("\n=== GERENCIAMENTO DE EQUIPES ===")
-    print("1. Adicionar nova equipe")
-    print("2. Listar equipes")
-    print("3. Listar histórico de atendimentos")
-    print("0. Voltar ao menu principal")
-    return input("Escolha uma opção: ")
+
 
 def gerenciar_equipes(central):
+    print("--------------------------------")
+    print("Bem vindo ao gerenciamento de equipes")
+    print("--------------------------------")
+    
     while True:
-        opcao = exibir_menu_equipes()
+        print("\n1. Adicionar nova equipe")
+        print("2. Finalizar cadastro de equipes")
+        opcao = input("Escolha uma opção: ")
         
         if opcao == "1":
             nome = input("Nome da equipe: ")
-            try:
-                capacidade = int(input("Capacidade da equipe (número de ocorrências simultâneas): "))
-                if capacidade <= 0:
-                    print("Erro: A capacidade deve ser maior que zero!")
-                    continue
-                    
-                equipe = Equipe(nome, capacidade)
-                central.adicionar_equipe(equipe)
-                print(f"Equipe {nome} adicionada com sucesso!")
-            except ValueError:
-                print("Erro: A capacidade deve ser um número inteiro!")
-                
+            equipe = Equipe(nome)
+            central.adicionar_equipe(equipe)
+            print(f"Equipe {nome} adicionada com sucesso!")
         elif opcao == "2":
             if not central.equipes:
-                print("Não há equipes cadastradas!")
-            else:
-                print("\nEquipes cadastradas:")
-                for i, equipe in enumerate(central.equipes, 1):
-                    print(f"{i}. {equipe}")
-        
-        elif opcao == "3":
-            central.listar_historico_equipe()     
-
-        elif opcao == "0":
+                print("É necessário adicionar pelo menos uma equipe!")
+                continue
+            print("Cadastro de equipes finalizado!")
             break
-            
         else:
             print("Opção inválida!")
 
-def verificar_equipes(central):
-    """Verifica se existem equipes cadastradas"""
-    if not central.equipes:
-        print("\nATENÇÃO: Não há equipes cadastradas!")
-        print("Por favor, cadastre pelo menos uma equipe antes de continuar.")
-        gerenciar_equipes(central)
-        return False
-    return True
+def selecionar_equipe(central):
+    print("\nEquipes disponíveis:")
+    for i, equipe in enumerate(central.equipes, 0):
+        print(f"{i}. {equipe.nome}")
+    
+    while True:
+        try:
+            escolha = int(input("\nEscolha o número da equipe: "))
+            if escolha <= len(central.equipes):
+                return central.equipes[escolha]
+            print("Número de equipe inválido!")
+        except ValueError:
+            print("Por favor, digite um número válido!")
 
 def main():
     central = CentralAtendimento()
-    
+
+ 
+    gerenciar_equipes(central)
     while True:
         opcao = exibir_menu()
         
-        if opcao == "1":
-            gerenciar_equipes(central)
-            
-        elif opcao == "2":
+
+         ## adicionar nova ocorrencia
+        if opcao == "2":
            
                 try:
-                    regiao = input("Região: ")
-                    severidade = int(input("Nível de severidade (1-5): "))
+                    regiao = input("Região (Norte, Sul, Leste, Oeste, Centro): ")
+                    severidade = int(input("Nível de severidade de 1 a 5, sendo 5 a maior grau de severiedade : "))
                     descricao = input("Descrição: ")
                     
                     ocorrencia = Ocorrencia(regiao, severidade, descricao)
@@ -92,49 +81,66 @@ def main():
                 except ValueError:
                     print("Erro: Severidade deve ser um número entre 1 e 5")
                     
+        ## atender ocorrência
         elif opcao == "3":
-            if verificar_equipes(central):
+            
                 ocorrencia = central.atender_proxima_ocorrencia()
                 if ocorrencia:
-                    print(f"Atendendo ocorrência #{ocorrencia.id} em {ocorrencia.regiao}")
+                    equipe = selecionar_equipe(central)
+                    ocorrencia.atribuir_equipe(equipe)
+                    equipe.adicionar_ocorrencia_registrada(ocorrencia)
+                    print(f"Atendendo ocorrência #{ocorrencia.id} em {ocorrencia.regiao} com a equipe {ocorrencia.equipe_atendimento.nome}")
                 else:
                     print("Não há ocorrências pendentes!")
                     
         
                 
+        ## atualizar status de ocorrência 
         elif opcao == "4":
-            if verificar_equipes(central):
+            
                 id_ocorrencia = int(input("ID da ocorrência: "))
                 novo_status = input("Novo status (pendente/em_atendimento/resolvida): ")
-                central.atualizar_status(id_ocorrencia, novo_status)
+                central.atualizar_status_ocorrencia(id_ocorrencia, novo_status)
                 
-        elif opcao == "5":
-            if verificar_equipes(central):
-                regiao = input("Região para relatório: ")
-                central.gerar_relatorio_regiao(regiao)
+        ## gerar relatório por região
+        # elif opcao == "5":
+        #     if verificar_equipes(central):
+        #         regiao = input("Região para relatório: ")
+        #         central.gerar_relatorio_regiao(regiao)
                 
         # elif opcao == "6":
         #     if verificar_equipes(central):
         #         num_simulacoes = int(input("Número de simulações: "))
         #         central.simular_chamadas(num_simulacoes)
                 
+        ## buscar detalhes de ocorrência
         elif opcao == "7":
-            if verificar_equipes(central):
+            
                 id_ocorrencia = int(input("ID da ocorrência: "))
                 ocorrencia = central.buscar_ocorrencia(id_ocorrencia)
                 if ocorrencia:
-                    print(ocorrencia)
+                    print(ocorrencia.__str__())
                 else:
                     print("Ocorrência não encontrada!")
                     
+        ## buscar lista de ocorrências por grau de severidade
         elif opcao == "8":
-            if verificar_equipes(central):
+           
                 try:
                     severidade = int(input("Nível de severidade (1-5): "))
                     central.listar_ocorrencias_por_severidade(severidade)
                 except ValueError:
                     print("Erro: Severidade deve ser um número entre 1 e 5")
                     
+        ## listar todas as ocorrências registradas
+        elif opcao == "9":
+            central.listar_completamente_ocorrencias_registradas()
+                    
+        ## listar histórico de atendimentos de uma equipe
+        elif opcao == "10":
+            for equipe in central.equipes:
+                equipe.listar_historico()
+
         elif opcao == "0":
             print("Encerrando o sistema...")
             break

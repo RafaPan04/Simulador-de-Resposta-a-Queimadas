@@ -11,17 +11,13 @@ class Historico(Generic[T]):
         """Adiciona um item ao histórico (push na pilha)"""
         self._registros.append(item)
         
-    def listar(self, formatter=None):
-        """Lista o histórico (do mais recente para o mais antigo)"""
+    def listar(self):
+        """Lista o histórico (do mais recente para o mais antigo) e retorna a lista"""
         if not self._registros:
             print("Histórico vazio")
-            return
-            
-        for item in reversed(self._registros):
-            if formatter:
-                print(formatter(item))
-            else:
-                print(item)
+            return []
+                
+        return list(reversed(self._registros))
                 
     def esta_vazio(self) -> bool:
         """Verifica se o histórico está vazio"""
