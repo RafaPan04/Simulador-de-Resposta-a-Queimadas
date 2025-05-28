@@ -1,14 +1,44 @@
+"""
+Sistema de Gerenciamento de Ocorrências de Queimadas - Classe Ocorrência
+
+Este módulo implementa a classe Ocorrencia, que representa uma ocorrência de queimada
+no sistema, contendo todas as informações relevantes sobre o incidente.
+"""
+
 from datetime import datetime
-from historico import Historico
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from equipe import Equipe
 
 class Ocorrencia:
-    _id_counter = 1
+    """
+    Classe que representa uma ocorrência de queimada no sistema.
+    
+    Atributos:
+        id (int): Identificador único da ocorrência
+        regiao (str): Região onde ocorreu a queimada
+        severidade (int): Nível de severidade (1-5)
+        descricao (str): Descrição detalhada da ocorrência
+        status (str): Status atual (pendente/em_atendimento/resolvida)
+        data_registro (datetime): Data e hora do registro
+        data_atendimento (datetime): Data e hora do início do atendimento
+        data_resolucao (datetime): Data e hora da resolução
+        tempo_espera (int): Tempo de espera em minutos
+        equipe_atendimento (Equipe): Equipe responsável pelo atendimento
+    """
+    
+    _id_counter = 1  # Contador estático para gerar IDs únicos
     
     def __init__(self, regiao, severidade, descricao):
+        """
+        Inicializa uma nova ocorrência.
+        
+        Args:
+            regiao (str): Região da ocorrência
+            severidade (int): Nível de severidade (1-5)
+            descricao (str): Descrição da ocorrência
+        """
         self.id = Ocorrencia._id_counter
         Ocorrencia._id_counter += 1
         
@@ -23,7 +53,15 @@ class Ocorrencia:
         self.equipe_atendimento: "Equipe | None" = None  # Referência à equipe que está atendendo
         
     def atribuir_equipe(self, equipe: "Equipe") -> bool:
-        """Atribui uma equipe para atender a ocorrência"""
+        """
+        Atribui uma equipe para atender a ocorrência.
+        
+        Args:
+            equipe (Equipe): Equipe a ser atribuída
+            
+        Returns:
+            bool: True se a atribuição foi bem-sucedida, False caso contrário
+        """
         if self.equipe_atendimento is not None:
             return False
             
@@ -32,7 +70,12 @@ class Ocorrencia:
         return True
         
     def atualizar_status(self, novo_status):
-        """Atualiza o status da ocorrência e registra timestamps relevantes"""
+        """
+        Atualiza o status da ocorrência e registra timestamps relevantes.
+        
+        Args:
+            novo_status (str): Novo status da ocorrência
+        """
         self.status = novo_status
         if novo_status == "em_atendimento" and not self.data_atendimento:
             self.data_atendimento = datetime.now()
@@ -40,12 +83,18 @@ class Ocorrencia:
             self.data_resolucao = datetime.now()
             
     def exibir_resumo(self):
-        """Exibe um resumo da ocorrência"""
+        """Exibe um resumo conciso da ocorrência."""
         equipe_info = f" - Equipe: {self.equipe_atendimento.nome}" if self.equipe_atendimento else ""
+        print ("======================================")
         print(f"Ocorrência #{self.id} - Região: {self.regiao} - Severidade: {self.severidade} - Status: {self.status}{equipe_info}")
 
     def __str__(self):
-        """Retorna uma representação em string da ocorrência"""
+        """
+        Retorna uma representação detalhada da ocorrência em formato string.
+        
+        Returns:
+            str: Representação detalhada da ocorrência
+        """
         equipe_info = f"Equipe atendendo: {self.equipe_atendimento.nome}" if self.equipe_atendimento else "Sem equipe atribuída"
         return f"""
 Ocorrência #{self.id}

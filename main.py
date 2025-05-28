@@ -1,28 +1,40 @@
+"""
+Sistema de Gerenciamento de Ocorrências de Queimadas - Interface Principal
+
+Este módulo implementa a interface de usuário do sistema, fornecendo um menu interativo
+para gerenciar ocorrências de queimadas, equipes e atendimentos.
+"""
+
 from central_atendimento import CentralAtendimento
 from ocorrencia import Ocorrencia
 from equipe import Equipe
-import random
-import time
 from datetime import datetime
 
 def exibir_menu():
-    print("\n=== SIMULADOR DE RESPOSTA A QUEIMADAS ===")
-    print("2. Adicionar uma nova ocorrência")
-    print("3. Atender ocorrência (atenderá a ocorrência com maior prioridade na fila)")
-    print("4. Atualizar status de ocorrência")
-    # print("6. Simular chamadas aleatórias")
-    print("7. Buscar detalhes de ocorrência")
-    print("8. Buscar lista de ocorrências por grau de severidade")
-    print("9. Listar todas as ocorrências registradas")
-    print("10. Listar histórico de atendimentos de todas as equipes")
+    """
+    Exibe o menu principal do sistema com todas as opções disponíveis.
+    Retorna a opção escolhida pelo usuário.
+    """
+    print("\n=== OPCÇÕES DE AÇÕES ===")
+    print("1. Adicionar uma nova ocorrência")
+    print("2. Atender ocorrência (atenderá a ocorrência com maior prioridade na fila)")
+    print("3. Atualizar status de ocorrência")
+    print("4. Buscar detalhes de ocorrência")
+    print("5. Buscar lista de ocorrências por grau de severidade")
+    print("6. Listar todas as ocorrências registradas")
+    print("7. Listar histórico de atendimentos de todas as equipes")
     print("0. Sair")
     return input("Escolha uma opção: ")
 
-
-
 def gerenciar_equipes(central):
+    """
+    Gerencia o cadastro inicial de equipes no sistema.
+    
+    Args:
+        central (CentralAtendimento): Instância da central de atendimento
+    """
     print("--------------------------------")
-    print("Bem vindo ao gerenciamento de equipes")
+    print("Bem vindo ao gerenciamento de equipes ao combate de queimadas")
     print("--------------------------------")
     
     while True:
@@ -45,6 +57,15 @@ def gerenciar_equipes(central):
             print("Opção inválida!")
 
 def selecionar_equipe(central):
+    """
+    Permite ao usuário selecionar uma equipe da lista de equipes disponíveis.
+    
+    Args:
+        central (CentralAtendimento): Instância da central de atendimento
+    
+    Returns:
+        Equipe: A equipe selecionada pelo usuário
+    """
     print("\nEquipes disponíveis:")
     for i, equipe in enumerate(central.equipes, 0):
         print(f"{i}. {equipe.nome}")
@@ -59,88 +80,76 @@ def selecionar_equipe(central):
             print("Por favor, digite um número válido!")
 
 def main():
+    """
+    Função principal que inicializa o sistema e gerencia o fluxo de execução.
+    """
+    # Inicializa a central de atendimento
     central = CentralAtendimento()
 
- 
+    # Realiza o cadastro inicial de equipes
     gerenciar_equipes(central)
+    
+    # Loop principal do sistema
     while True:
         opcao = exibir_menu()
         
-
-         ## adicionar nova ocorrencia
-        if opcao == "2":
-           
-                try:
-                    regiao = input("Região (Norte, Sul, Leste, Oeste, Centro): ")
-                    severidade = int(input("Nível de severidade de 1 a 5, sendo 5 a maior grau de severiedade : "))
-                    descricao = input("Descrição: ")
-                    
-                    ocorrencia = Ocorrencia(regiao, severidade, descricao)
-                    central.registrar_ocorrencia(ocorrencia)
-                    print("Ocorrência registrada com sucesso!")
-                except ValueError:
-                    print("Erro: Severidade deve ser um número entre 1 e 5")
-                    
-        ## atender ocorrência
+        # Adicionar nova ocorrência
+        if opcao == "1":
+            try:
+                regiao = input("Região (Norte, Sul, Leste, Oeste, Centro): ")
+                severidade = int(input("Nível de severidade de 1 a 5, sendo 5 a maior grau de severiedade : "))
+                descricao = input("Descrição: ")
+                
+                ocorrencia = Ocorrencia(regiao, severidade, descricao)
+                central.registrar_ocorrencia(ocorrencia)
+                print("Ocorrência registrada com sucesso!")
+            except ValueError:
+                print("Erro: Severidade deve ser um número entre 1 e 5")
+                
+        # Atender ocorrência
+        elif opcao == "2":
+            ocorrencia = central.atender_proxima_ocorrencia()
+            if ocorrencia:
+                equipe = selecionar_equipe(central)
+                ocorrencia.atribuir_equipe(equipe)
+                equipe.adicionar_ocorrencia_registrada(ocorrencia)
+                print(f"Atendendo ocorrência #{ocorrencia.id} em {ocorrencia.regiao} com a equipe {ocorrencia.equipe_atendimento.nome}")
+            else:
+                print("Não há ocorrências pendentes!")
+                
+        # Atualizar status de ocorrência 
         elif opcao == "3":
+            id_ocorrencia = int(input("ID da ocorrência: "))
+            novo_status = input("Novo status (pendente/em_atendimento/resolvida): ")
+            central.atualizar_status_ocorrencia(id_ocorrencia, novo_status)
             
-                ocorrencia = central.atender_proxima_ocorrencia()
-                if ocorrencia:
-                    equipe = selecionar_equipe(central)
-                    ocorrencia.atribuir_equipe(equipe)
-                    equipe.adicionar_ocorrencia_registrada(ocorrencia)
-                    print(f"Atendendo ocorrência #{ocorrencia.id} em {ocorrencia.regiao} com a equipe {ocorrencia.equipe_atendimento.nome}")
-                else:
-                    print("Não há ocorrências pendentes!")
-                    
-        
-                
-        ## atualizar status de ocorrência 
+        # Buscar detalhes de ocorrência
         elif opcao == "4":
-            
-                id_ocorrencia = int(input("ID da ocorrência: "))
-                novo_status = input("Novo status (pendente/em_atendimento/resolvida): ")
-                central.atualizar_status_ocorrencia(id_ocorrencia, novo_status)
+            id_ocorrencia = int(input("ID da ocorrência: "))
+            ocorrencia = central.buscar_ocorrencia(id_ocorrencia)
+            if ocorrencia:
+                print(ocorrencia.__str__())
+            else:
+                print("Ocorrência não encontrada!")
                 
-        ## gerar relatório por região
-        # elif opcao == "5":
-        #     if verificar_equipes(central):
-        #         regiao = input("Região para relatório: ")
-        #         central.gerar_relatorio_regiao(regiao)
+        # Buscar lista de ocorrências por grau de severidade
+        elif opcao == "5":
+            try:
+                severidade = int(input("Nível de severidade (1-5): "))
+                central.listar_ocorrencias_por_severidade(severidade)
+            except ValueError:
+                print("Erro: Severidade deve ser um número entre 1 e 5")
                 
-        # elif opcao == "6":
-        #     if verificar_equipes(central):
-        #         num_simulacoes = int(input("Número de simulações: "))
-        #         central.simular_chamadas(num_simulacoes)
-                
-        ## buscar detalhes de ocorrência
-        elif opcao == "7":
-            
-                id_ocorrencia = int(input("ID da ocorrência: "))
-                ocorrencia = central.buscar_ocorrencia(id_ocorrencia)
-                if ocorrencia:
-                    print(ocorrencia.__str__())
-                else:
-                    print("Ocorrência não encontrada!")
-                    
-        ## buscar lista de ocorrências por grau de severidade
-        elif opcao == "8":
-           
-                try:
-                    severidade = int(input("Nível de severidade (1-5): "))
-                    central.listar_ocorrencias_por_severidade(severidade)
-                except ValueError:
-                    print("Erro: Severidade deve ser um número entre 1 e 5")
-                    
-        ## listar todas as ocorrências registradas
-        elif opcao == "9":
+        # Listar todas as ocorrências registradas
+        elif opcao == "6":
             central.listar_completamente_ocorrencias_registradas()
                     
-        ## listar histórico de atendimentos de uma equipe
-        elif opcao == "10":
+        # Listar histórico de atendimentos de uma equipe
+        elif opcao == "7":
             for equipe in central.equipes:
                 equipe.listar_historico()
 
+        # Sair do sistema
         elif opcao == "0":
             print("Encerrando o sistema...")
             break
