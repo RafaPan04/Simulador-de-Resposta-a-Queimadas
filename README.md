@@ -1,6 +1,13 @@
+
 # Sistema de Gerenciamento de Ocorrências de Queimadas
 
 Este é um sistema de gerenciamento de ocorrências de queimadas que permite o registro, priorização e atendimento de incidentes por equipes de resposta. O sistema utiliza estruturas de dados eficientes para garantir um atendimento rápido e organizado das ocorrências.
+
+## Integrantes
+- Guilherme Oliveira Da Silva -  558797
+- Rafael Panhoca - 555014
+- Silas Alves  - 555020
+
 
 ## Estrutura do Projeto
 
@@ -31,7 +38,7 @@ Classe que representa uma ocorrência de queimada. Atributos:
 - Severidade (1-5)
 - Descrição
 - Status (pendente/em_atendimento/resolvida)
-- Datas de registro, atendimento e resolução
+- Datas de registro, atendimento
 - Equipe responsável
 
 ### 4. `equipe.py`
@@ -51,7 +58,6 @@ Classe genérica para gerenciar histórico de eventos. Funcionalidades:
 - Registro de eventos
 - Listagem ordenada (mais recente primeiro)
 - Verificação de estado vazio
-- Contagem de registros
 
 ## Como Usar
 
@@ -69,9 +75,10 @@ Classe genérica para gerenciar histórico de eventos. Funcionalidades:
 - Sistema de priorização inteligente
 - Rastreamento completo de ocorrências
 - Histórico detalhado de atendimentos
-- Interface de usuário intuitiva
 
 ## Estruturas de Dados Utilizadas
+
+#### Conjunto 3: Analise de algoritmos/notação O grande, Busca binária, dicionários + Pilha e Heap (Conjunto 1)
 
 O sistema utiliza várias estruturas de dados otimizadas para diferentes propósitos:
 
@@ -80,6 +87,7 @@ O sistema utiliza várias estruturas de dados otimizadas para diferentes propós
 - **Uso**: Gerenciamento de ocorrências por prioridade
 - **Implementação**: Utiliza o módulo `heapq` do Python
 - **Complexidade**: O(log n) para inserção e remoção
+- **Explicação da complexidade**: A complexidade O(log n) garante que mesmo com um grande número de ocorrências, as operações de inserção e remoção permanecem eficientes. Por exemplo, com 1 milhão de ocorrências, apenas cerca de 20 operações são necessárias para inserir ou remover um elemento.
 - **Exemplo de uso**:
 ```python
 def adicionar(self, ocorrencia: Ocorrencia):
@@ -92,6 +100,7 @@ def adicionar(self, ocorrencia: Ocorrencia):
 - **Uso**: Armazenamento e busca rápida de ocorrências por ID
 - **Implementação**: `self.ocorrencias: dict[int, Ocorrencia] = {}`
 - **Complexidade**: O(1) para busca, inserção e remoção
+- **Explicação da complexidade**: A complexidade O(1) significa que o tempo de acesso é constante, independentemente do tamanho do dicionário. Isso é possível graças à função de hash que mapeia diretamente a chave para sua posição na memória, tornando as operações extremamente rápidas mesmo com milhares de ocorrências.
 - **Exemplo de uso**:
 ```python
 def buscar_ocorrencia(self, id_ocorrencia):
@@ -103,6 +112,7 @@ def buscar_ocorrencia(self, id_ocorrencia):
 - **Uso**: Busca eficiente de ocorrências por severidade
 - **Implementação**: Lista ordenada com busca binária
 - **Complexidade**: O(log n) para busca
+- **Explicação da complexidade**: A busca binária reduz drasticamente o número de comparações necessárias. Em uma lista de 1 milhão de ocorrências, uma busca linear levaria até 1 milhão de comparações, enquanto a busca binária requer no máximo 20 comparações, tornando a busca por severidade muito mais eficiente.
 - **Exemplo de uso**:
 ```python
 def buscar_por_severidade(self, severidade):
@@ -120,16 +130,13 @@ def buscar_por_severidade(self, severidade):
 - **Uso**: Gerenciamento de histórico de eventos
 - **Implementação**: Lista Python com operações de pilha
 - **Complexidade**: O(1) para inserção e remoção do topo
+- **Explicação da complexidade**: As operações de pilha (push e pop) são extremamente eficientes pois sempre trabalham com o elemento do topo. A complexidade O(1) garante que o tempo de execução é constante, independentemente do tamanho do histórico, tornando o gerenciamento de eventos muito rápido.
 - **Exemplo de uso**:
 ```python
 def registrar(self, item: T):
     self._registros.append(item)
 ```
 
-## Requisitos
-
-- Python 3.x
-- Módulos padrão do Python (datetime, heapq)
 
 ## Exemplo de Uso
 

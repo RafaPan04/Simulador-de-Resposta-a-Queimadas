@@ -45,8 +45,12 @@ class Equipe:
         Exibe uma mensagem se a equipe ainda não atendeu nenhuma ocorrência.
         """
         if(self.historico_ocorrencias_registradas.esta_vazio() == False):
-            print(f"\nHistórico da Equipe {self.nome}:")
+            print("\n" + "="*50)
+            print(f"👥 HISTÓRICO DA EQUIPE: {self.nome}")
+            print("="*50)
             for ocorrencia in self.historico_ocorrencias_registradas.listar():  
-                print(f"Ocorrência #{ocorrencia.id} - {ocorrencia.regiao} - Severidade: {ocorrencia.severidade}")
+                ocorrencia.exibir_resumo()
         else:
-            print(f"\n\nA Equipe '{self.nome}' ainda não possui nenhuma ocorrência registrada")
+            print("\n" + "="*50)
+            print(f"ℹ️  A Equipe '{self.nome}' ainda não possui nenhuma ocorrência registrada")
+            print("="*50)

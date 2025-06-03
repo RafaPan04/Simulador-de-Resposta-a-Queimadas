@@ -6,7 +6,6 @@ a ordem de atendimento das ocorrências baseada em severidade e tempo de espera.
 """
 
 import heapq
-from datetime import datetime
 from ocorrencia import Ocorrencia
 
 class FilaPrioridade:
@@ -61,12 +60,3 @@ class FilaPrioridade:
         """
         return len(self._fila) == 0
         
-    def tamanho(self) -> int:
-        """
-        Retorna o tamanho atual da fila.
-        
-        Returns:
-            int: Número de ocorrências na fila
-        """
-        return len(self._fila)
-         

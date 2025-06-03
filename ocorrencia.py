@@ -24,7 +24,6 @@ class Ocorrencia:
         data_registro (datetime): Data e hora do registro
         data_atendimento (datetime): Data e hora do início do atendimento
         data_resolucao (datetime): Data e hora da resolução
-        tempo_espera (int): Tempo de espera em minutos
         equipe_atendimento (Equipe): Equipe responsável pelo atendimento
     """
     
@@ -38,18 +37,23 @@ class Ocorrencia:
             regiao (str): Região da ocorrência
             severidade (int): Nível de severidade (1-5)
             descricao (str): Descrição da ocorrência
+            
+        Raises:
+            ValueError: Se a severidade não estiver entre 1 e 5
         """
+        if not isinstance(severidade, int) or not 1 <= severidade <= 5:
+            raise ValueError("Severidade deve ser um número inteiro entre 1 e 5")
+            
         self.id = Ocorrencia._id_counter
         Ocorrencia._id_counter += 1
         
         self.regiao = regiao
-        self.severidade = min(max(severidade, 1), 5)  # Garante que severidade está entre 1 e 5
+        self.severidade = severidade
         self.descricao = descricao
         self.status = "pendente"
         self.data_registro = datetime.now()
         self.data_atendimento = None
         self.data_resolucao = None
-        self.tempo_espera = 0  # em minutos
         self.equipe_atendimento: "Equipe | None" = None  # Referência à equipe que está atendendo
         
     def atribuir_equipe(self, equipe: "Equipe") -> bool:
@@ -84,9 +88,20 @@ class Ocorrencia:
             
     def exibir_resumo(self):
         """Exibe um resumo conciso da ocorrência."""
-        equipe_info = f" - Equipe: {self.equipe_atendimento.nome}" if self.equipe_atendimento else ""
-        print ("======================================")
-        print(f"Ocorrência #{self.id} - Região: {self.regiao} - Severidade: {self.severidade} - Status: {self.status}{equipe_info}")
+        equipe_info = f" - 👥 Equipe: {self.equipe_atendimento.nome}" if self.equipe_atendimento else ""
+        status_emoji = {
+            "pendente": "⏳",
+            "em_atendimento": "🚒",
+            "resolvida": "✅"
+        }.get(self.status, "❓")
+        
+        print("="*50)
+        print(f"🔥 OCORRÊNCIA #{self.id}")
+        print("-"*50)
+        print(f"📍 Região: {self.regiao}")
+        print(f"⚠️ Severidade: {self.severidade}")
+        print(f"{status_emoji} Status: {self.status}{equipe_info}")
+        print("="*50)
 
     def __str__(self):
         """
@@ -95,13 +110,23 @@ class Ocorrencia:
         Returns:
             str: Representação detalhada da ocorrência
         """
-        equipe_info = f"Equipe atendendo: {self.equipe_atendimento.nome}" if self.equipe_atendimento else "Sem equipe atribuída"
+        status_emoji = {
+            "pendente": "⏳",
+            "em_atendimento": "🚒",
+            "resolvida": "✅"
+        }.get(self.status, "❓")
+        
+        equipe_info = f"👥 Equipe atendendo: {self.equipe_atendimento.nome}" if self.equipe_atendimento else "❌ Sem equipe atribuída"
+        
         return f"""
-Ocorrência #{self.id}
-Região: {self.regiao}
-Severidade: {self.severidade}
-Status: {self.status}
+{'='*50}
+🔥 OCORRÊNCIA #{self.id}
+{'='*50}
+📍 Região: {self.regiao}
+⚠️ Severidade: {self.severidade}
+{status_emoji} Status: {self.status}
 {equipe_info}
-Descrição: {self.descricao}
-Data de Registro: {self.data_registro.strftime('%d/%m/%Y %H:%M:%S')}
+📝 Descrição: {self.descricao}
+📅 Data de Registro: {self.data_registro.strftime('%d/%m/%Y %H:%M:%S')}
+{'='*50}
 """

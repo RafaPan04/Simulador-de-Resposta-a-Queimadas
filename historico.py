@@ -5,7 +5,7 @@ Este módulo implementa uma classe genérica para gerenciar histórico de evento
 utilizando uma estrutura de pilha para manter o registro cronológico.
 """
 
-from typing import TypeVar, Generic, List, Tuple, Any
+from typing import TypeVar, Generic, List
 
 T = TypeVar('T')
 
@@ -44,7 +44,7 @@ class Historico(Generic[T]):
             List[T]: Lista dos registros em ordem cronológica reversa
         """
         if not self._registros:
-            print("Histórico vazio")
+            print("❌ Histórico vazio ❌")
             return []
                 
         return list(reversed(self._registros))
@@ -58,12 +58,5 @@ class Historico(Generic[T]):
         """
         return len(self._registros) == 0
         
-    def tamanho(self) -> int:
-        """
-        Retorna o tamanho atual do histórico.
-        
-        Returns:
-            int: Número de registros no histórico
-        """
-        return len(self._registros)
+   
         

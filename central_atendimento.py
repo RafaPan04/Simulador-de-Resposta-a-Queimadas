@@ -23,11 +23,10 @@ class CentralAtendimento:
     
     def __init__(self):
         """Inicializa a central de atendimento com estruturas de dados vazias."""
-        self.ocorrencias: dict[int, Ocorrencia] = {}  # Dicionário para busca rápida por ID
+        self.ocorrencias: dict[int, Ocorrencia] = {}  # Dicionário para busca rápida por ID para opção 4: "Buscar detalhes de ocorrência"
         self.fila_prioridade = FilaPrioridade()  # Fila de prioridade para ocorrências
         self.equipes: list[Equipe] = []  # Lista de equipes disponíveis
-        self.regioes = set()  # Conjunto de regiões atendidas
-        self.ocorrencias_por_severidade = []  # Lista ordenada para busca binária
+        self.ocorrencias_por_severidade = []  # Lista ordenada para busca binária e opção 5: "Buscar lista de ocorrências por grau de severidade" 
         
     def adicionar_equipe(self, equipe):
         """
@@ -64,7 +63,13 @@ class CentralAtendimento:
             
         Returns:
             list[Ocorrencia]: Lista de ocorrências com a severidade especificada
+
+        Raises:
+            ValueError: Se a severidade não estiver entre 1 e 5
         """
+        if not isinstance(severidade, int) or not 1 <= severidade <= 5:
+            raise ValueError("Severidade deve ser um número inteiro entre 1 e 5")
+            
         if not self.ocorrencias_por_severidade:
             return []
             
@@ -105,9 +110,13 @@ class CentralAtendimento:
         """
         ocorrencias = self.buscar_por_severidade(severidade)
         if not ocorrencias:
-            print(f"Nenhuma ocorrência com severidade {severidade} encontrada")
+            print("\n" + "="*50)
+            print(f"ℹ️  Nenhuma ocorrência com severidade {severidade} encontrada")
+            print("="*50)
             return
-        print(f"\nOcorrências com severidade {severidade}:")
+        print("\n" + "="*50)
+        print(f"📊 OCORRÊNCIAS COM SEVERIDADE {severidade}")
+        print("="*50)
         for ocorrencia in ocorrencias:
             ocorrencia.exibir_resumo()
 
@@ -126,8 +135,16 @@ class CentralAtendimento:
     
     def listar_completamente_ocorrencias_registradas(self):
         """Lista o histórico de todas as ocorrências registradas no sistema."""
+        if not self.ocorrencias:
+            print("\n" + "="*50)
+            print("ℹ️  Não há ocorrências registradas no sistema")
+            print("="*50)
+            return
+            
+        print("\n" + "="*50)
+        print("📋 TODAS AS OCORRÊNCIAS REGISTRADAS")
+        print("="*50)
         for ocorrencia in self.ocorrencias.values():
-            print("======================================")
             print(ocorrencia.__str__())
             
     def atualizar_status_ocorrencia(self, id_ocorrencia, novo_status):
@@ -141,6 +158,13 @@ class CentralAtendimento:
         if id_ocorrencia in self.ocorrencias:
             ocorrencia = self.ocorrencias[id_ocorrencia]
             ocorrencia.atualizar_status(novo_status)
+            print("\n" + "="*50)
+            print(f"✅ Status da ocorrência #{id_ocorrencia} atualizado para: {novo_status}")
+            print("="*50)
+        else:
+            print("\n" + "="*50)
+            print(f"❌ Ocorrência #{id_ocorrencia} não encontrada")
+            print("="*50)
 
     def buscar_ocorrencia(self, id_ocorrencia):
         """
@@ -154,22 +178,4 @@ class CentralAtendimento:
         """
         return self.ocorrencias.get(id_ocorrencia)
 
-    def atualizar_status_ocorrencia(self, id_ocorrencia, novo_status):
-        """Atualiza o status de uma ocorrência"""
-        if id_ocorrencia in self.ocorrencias:
-            ocorrencia = self.ocorrencias[id_ocorrencia]
-            ocorrencia.atualizar_status(novo_status)
 
-
-        """Gera relatório de atendimentos por região"""
-        ocorrencias_regiao = [o for o in self.ocorrencias.values() if o.regiao == regiao]
-        
-        print(f"\nRelatório da Região: {regiao}")
-        print(f"Total de ocorrências: {len(ocorrencias_regiao)}")
-        
-        if ocorrencias_regiao:
-            tempo_medio = sum(o.calcular_tempo_espera() for o in ocorrencias_regiao) / len(ocorrencias_regiao)
-            print(f"Tempo médio de atendimento: {tempo_medio:.2f} minutos")
-            
-            severidades = [o.severidade for o in ocorrencias_regiao]
-            print(f"Severidade média: {sum(severidades)/len(severidades):.1f}") 
