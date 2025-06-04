@@ -147,19 +147,18 @@ class CentralAtendimento:
         for ocorrencia in self.ocorrencias.values():
             print(ocorrencia.__str__())
             
-    def atualizar_status_ocorrencia(self, id_ocorrencia, novo_status):
+    def concluir_ocorrencia(self, id_ocorrencia):
         """
         Atualiza o status de uma ocorrência específica.
         
         Args:
             id_ocorrencia (int): ID da ocorrência
-            novo_status (str): Novo status da ocorrência
         """
         if id_ocorrencia in self.ocorrencias:
             ocorrencia = self.ocorrencias[id_ocorrencia]
-            ocorrencia.atualizar_status(novo_status)
+            ocorrencia.atualizar_status("resolvida")
             print("\n" + "="*50)
-            print(f"✅ Status da ocorrência #{id_ocorrencia} atualizado para: {novo_status}")
+            print(f"✅ Ocorrência #{id_ocorrencia} concluída")
             print("="*50)
         else:
             print("\n" + "="*50)

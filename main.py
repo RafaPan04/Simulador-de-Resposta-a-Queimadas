@@ -21,7 +21,7 @@ def exibir_menu():
     print("\n📋 MENU DE AÇÕES:")
     print("1. ➕ Adicionar uma nova ocorrência")
     print("2. 🚒 Atender ocorrência (atenderá a ocorrência com maior prioridade na fila)")
-    print("3. 🔄 Atualizar status de ocorrência")
+    print("3. ✅ Concluir ocorrência")
     print("4. 🔍 Buscar detalhes de ocorrência")
     print("5. 📊 Buscar lista de ocorrências por grau de severidade")
     print("6. 📝 Listar todas as ocorrências registradas")
@@ -129,14 +129,13 @@ def main():
             else:
                 print("\nℹ️ Não há ocorrências pendentes!")
                 
-        # Atualizar status de ocorrência 
+        # Concluir ocorrência 
         elif opcao == "3":
             print("\n" + "="*50)
-            print("🔄 ATUALIZAR STATUS")
+            print("✅ CONCLUIR OCORRÊNCIA")
             print("="*50)
             id_ocorrencia = int(input("🔢 ID da ocorrência: "))
-            novo_status = input("📊 Novo status (pendente/em_atendimento/resolvida): ")
-            central.atualizar_status_ocorrencia(id_ocorrencia, novo_status)
+            central.concluir_ocorrencia(id_ocorrencia)
             
         # Buscar detalhes de ocorrência
         elif opcao == "4":

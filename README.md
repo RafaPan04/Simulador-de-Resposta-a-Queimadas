@@ -17,7 +17,7 @@ O projeto é composto por vários módulos, cada um com uma responsabilidade esp
 Arquivo principal que contém a interface do usuário e a lógica de controle do sistema. Oferece um menu interativo com as seguintes opções:
 - Adicionar nova ocorrência
 - Atender ocorrência
-- Atualizar status de ocorrência
+- Concluir ocorrência
 - Buscar detalhes de ocorrência
 - Buscar lista de ocorrências por grau de severidade
 - Listar todas as ocorrências registradas
@@ -29,7 +29,7 @@ Classe principal que gerencia todo o sistema. Responsabilidades:
 - Registro de ocorrências
 - Priorização de atendimentos
 - Busca e listagem de ocorrências
-- Atualização de status
+- Concluir ocorrência
 
 ### 3. `ocorrencia.py`
 Classe que representa uma ocorrência de queimada. Atributos:
@@ -66,7 +66,7 @@ Classe genérica para gerenciar histórico de eventos. Funcionalidades:
 3. Use o menu interativo para:
    - Registrar novas ocorrências
    - Atender ocorrências pendentes
-   - Atualizar status de ocorrências
+   - Concluir ocorrência
    - Consultar informações do sistema
 
 ## Características Técnicas
