@@ -8,6 +8,7 @@ Este é um sistema de gerenciamento de ocorrências de queimadas que permite o r
 - Rafael Panhoca - 555014
 - Silas Alves  - 555020
 
+### Oritentação pelo professor: José Roberto Cândido da Silva
 
 ## Estrutura do Projeto
 
